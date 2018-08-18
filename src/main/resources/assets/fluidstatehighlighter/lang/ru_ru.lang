@@ -1,0 +1,6 @@
+key.switchFluidStateHL=Переключить показ состояния жидкостей
+key.categories.fluidStateHL=FluidStateHighlighter
+fluidstatehighlighter.chat.switch=Отображать жидкости: %s
+fluidstatehighlighter.chat.mode.none=отключено
+fluidstatehighlighter.chat.mode.source=источники
+fluidstatehighlighter.chat.mode.flowing=текущие

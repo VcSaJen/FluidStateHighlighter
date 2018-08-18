@@ -30,7 +30,7 @@ public class FluidCubesRenderer extends FloatingCubesRenderer implements Limited
                 case NONE:
                     return "none";
                 case SOURCE:
-                    return "sources";
+                    return "source";
                 case FLOWING:
                     return "flowing";
                 default:

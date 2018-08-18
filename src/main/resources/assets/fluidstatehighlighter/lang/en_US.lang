@@ -1,0 +1,6 @@
+key.switchFluidStateHL=Switch fluid state display
+key.categories.fluidStateHL=FluidStateHighlighter
+fluidstatehighlighter.chat.switch=Displaying fluids: %s
+fluidstatehighlighter.chat.mode.none=none
+fluidstatehighlighter.chat.mode.source=sources
+fluidstatehighlighter.chat.mode.flowing=flowing

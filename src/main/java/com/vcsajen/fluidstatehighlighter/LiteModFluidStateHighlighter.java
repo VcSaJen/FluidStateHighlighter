@@ -6,7 +6,6 @@ import com.mumfrey.liteloader.PostRenderListener;
 import com.mumfrey.liteloader.Tickable;
 import com.mumfrey.liteloader.core.LiteLoader;
 import com.mumfrey.liteloader.util.Input;
-import com.vcsajen.fluidstatehighlighter.render.BaseRenderer;
 import com.vcsajen.fluidstatehighlighter.render.FluidCubesRenderer;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -19,17 +18,15 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import org.lwjgl.input.Keyboard;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 
 public class LiteModFluidStateHighlighter implements JoinGameListener, PostRenderListener, Tickable {
 
-    private static KeyBinding kbToggleLightLevels; // Toggle displaying it
-    private static KeyBinding kbIncMaxLightLevel; // Increase max displayed light level (inclusive, max: 14)
-    private static KeyBinding kbDecMaxLightLevel; // Decrease max displayed light level (inclusive, min: 0)
+    private static KeyBinding kbSwitchDisplayFluidState; // Toggle displaying it
 
     private boolean visible;
     private int maxLightLvl = 11;
@@ -39,7 +36,7 @@ public class LiteModFluidStateHighlighter implements JoinGameListener, PostRende
     public void onJoinGame(INetHandler netHandler, SPacketJoinGame joinGamePacket, ServerData serverData, RealmsServer realmsServer) {
         fluidRenderer = new FluidCubesRenderer(Minecraft.getMinecraft());
         EntityPlayerSP player = Minecraft.getMinecraft().player;
-        player.sendMessage(new TextComponentString("Light Levels 3D is successfully loaded!"));
+        //player.sendMessage(new TextComponentString("Light Levels 3D is successfully loaded!"));
     }
 
     @Override
@@ -49,14 +46,10 @@ public class LiteModFluidStateHighlighter implements JoinGameListener, PostRende
 
     @Override
     public void init(File configPath) {
-        String keybindCategory = "Light Levels 3D";
+        String keybindCategory = "key.categories.fluidStateHL";
         Input input = LiteLoader.getInput();
-        kbToggleLightLevels = new KeyBinding("Toggle light levels", Keyboard.KEY_NUMPAD5, keybindCategory);
-        kbIncMaxLightLevel = new KeyBinding("Increase max detected light level", Keyboard.KEY_NUMPAD8, keybindCategory);
-        kbDecMaxLightLevel = new KeyBinding("Decrease max detected light level", Keyboard.KEY_NUMPAD2, keybindCategory);
-        input.registerKeyBinding(kbToggleLightLevels);
-        input.registerKeyBinding(kbIncMaxLightLevel);
-        input.registerKeyBinding(kbDecMaxLightLevel);
+        kbSwitchDisplayFluidState = new KeyBinding("key.switchFluidStateHL", Keyboard.KEY_NUMPAD5, keybindCategory);
+        input.registerKeyBinding(kbSwitchDisplayFluidState);
     }
 
     @Override
@@ -65,7 +58,7 @@ public class LiteModFluidStateHighlighter implements JoinGameListener, PostRende
 
     @Override
     public String getName() {
-        return LiteLoader.getInstance().getModMetaData(this, "displayName", this.getClass().getSimpleName());
+        return LiteLoader.getInstance().getModMetaData(this, "name", this.getClass().getSimpleName());
     }
 
     @Override
@@ -101,29 +94,20 @@ public class LiteModFluidStateHighlighter implements JoinGameListener, PostRende
 
     @Override
     public void onTick(Minecraft minecraft, float partialTicks, boolean inGame, boolean clock) {
-        if (kbToggleLightLevels.isPressed()) {
+        if (kbSwitchDisplayFluidState.isPressed()) {
             EntityPlayerSP player = minecraft.player;
             visible = !visible;
             fluidRenderer.setRenderFluidType(fluidRenderer.getRenderFluidType().getRotNext());
-            player.sendMessage(new TextComponentString("Displaying fluids: "+fluidRenderer.getRenderFluidType()));
+            player.sendMessage(new TextComponentTranslation("fluidstatehighlighter.chat.switch",
+                    new TextComponentTranslation("fluidstatehighlighter.chat.mode."+fluidRenderer.getRenderFluidType())));
+
+
             //player.sendMessage(new TextComponentString("Displaying light levels '"+maxLightLvl+" and below' is "+(visible?"enabled":"disabled")));
             //IBlockState bs = player.getEntityWorld().getBlockState(findUnderEntityCoords(player));
             //Object lvlObj = getBlockStateProperty(bs,"level");
             //int lvl = (lvlObj instanceof Integer) ? (Integer)lvlObj : -1;
             //player.sendMessage(new TextComponentString(bs.toString()+": "+getBlockStatePropertyNames(bs)+" lvl:"+lvl));
             //player.sendMessage(new TextComponentString("vanillaFluid:" + isVanillaFluid(bs) + " forgeFluid:" + isForgeFluid(bs)));
-        }
-        if (kbIncMaxLightLevel.isPressed()) {
-            EntityPlayerSP player = minecraft.player;
-            maxLightLvl++;
-            if (maxLightLvl>14) maxLightLvl=14;
-            player.sendMessage(new TextComponentString("Displayed light level is set to "+maxLightLvl+" and below "+lightLevelMobs[maxLightLvl]));
-        }
-        if (kbDecMaxLightLevel.isPressed()) {
-            EntityPlayerSP player = minecraft.player;
-            maxLightLvl--;
-            if (maxLightLvl<0) maxLightLvl=0;
-            player.sendMessage(new TextComponentString("Displayed light level is set to "+maxLightLvl+" and below "+lightLevelMobs[maxLightLvl]));
         }
     }
 }
